@@ -1,0 +1,17 @@
+name: Queue health check
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Heroku Command
+        run: |
+          curl -n -X POST https://api.heroku.com/apps/$HEROKU_APP_NAME/dynos \
+            -d '{ "attach": false, "command": "python -m src.jobs" }' \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/vnd.heroku+json; version=3" \
+            -H "Authorization: Bearer ${{ secrets.HEROKU_API_TOKEN }}"
